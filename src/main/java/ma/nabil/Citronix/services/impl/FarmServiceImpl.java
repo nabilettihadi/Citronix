@@ -25,4 +25,14 @@ public class FarmServiceImpl implements FarmService {
         return farmMapper.toResponse(farm);
     }
 
+    @Override
+    @Transactional
+    public FarmResponse update(Long id, FarmRequest request) {
+        Farm farm = getFarmById(id);
+        validateFarmUpdate(farm, request);
+        farmMapper.updateEntity(farm, request);
+        farm = farmRepository.save(farm);
+        return farmMapper.toResponse(farm);
+    }
+
 }
