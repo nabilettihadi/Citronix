@@ -10,6 +10,8 @@ import ma.nabil.Citronix.services.FarmService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class FarmServiceImpl implements FarmService {
@@ -33,6 +35,70 @@ public class FarmServiceImpl implements FarmService {
         farmMapper.updateEntity(farm, request);
         farm = farmRepository.save(farm);
         return farmMapper.toResponse(farm);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public FarmResponse getById(Long id) {
+        return farmMapper.toResponse(getFarmById(id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<FarmResponse> getAll() {
+        return farmRepository.findAll().stream()
+                .map(farmMapper::toResponse)
+                .toList();
+    }
+
+
+    private Farm getFarmById(Long id) {
+        return farmRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Ferme non trouvée avec l'id: " + id));
+    }
+
+    private void validateFarmCreation(FarmRequest request) {
+        if (farmRepository.existsByNameIgnoreCase(request.getName())) {
+            throw new BusinessException("Une ferme avec ce nom existe déjà");
+        }
+        validateFarmRequest(request);
+    }
+
+
+    private void validateFarmUpdate(Farm farm, FarmRequest request) {
+        if (!farm.getName().equalsIgnoreCase(request.getName())
+                && farmRepository.existsByNameIgnoreCase(request.getName())) {
+            throw new BusinessException("Une ferme avec ce nom existe déjà");
+        }
+        validateFarmRequest(request);
+    }
+
+    private void validateFarmRequest(FarmRequest request) {
+
+        if (request.getArea() < 1000) {
+            throw new BusinessException("La superficie minimale doit être de 0.1 hectare (1000 m²)");
+        }
+
+
+        if (request.getFields().size() > 10) {
+            throw new BusinessException("Une ferme ne peut pas avoir plus de 10 champs");
+        }
+
+
+        double totalFieldsArea = request.getFields().stream()
+                .mapToDouble(field -> field.getArea())
+                .sum();
+
+        if (totalFieldsArea >= request.getArea()) {
+            throw new BusinessException("La somme des superficies des champs ne peut pas dépasser celle de la ferme");
+        }
+
+
+        request.getFields().forEach(field -> {
+            if (field.getArea() > request.getArea() * 0.5) {
+                throw new BusinessException("La superficie d'un champ ne peut pas dépasser 50% de celle de la ferme");
+            }
+        });
     }
 
 }
