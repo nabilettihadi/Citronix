@@ -18,5 +18,7 @@ public interface FarmService {
 
     void delete(Long id);
 
-        List<FarmResponse> search(FarmSearchCriteria criteria);
+
+    List<FarmResponse> search(FarmSearchCriteria criteria);
+
 }

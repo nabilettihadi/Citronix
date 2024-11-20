@@ -7,6 +7,10 @@ import ma.nabil.Citronix.entities.Tree;
 import ma.nabil.Citronix.entities.Harvest;
 import org.springframework.data.jpa.domain.Specification;
 
+
+import java.time.LocalDate;
+
+
 public class FarmSpecs {
 
     public static Specification<Farm> nameLike(String name) {
@@ -48,7 +52,6 @@ public class FarmSpecs {
             Join<Farm, Field> fieldJoin = root.join("fields");
             Join<Field, Tree> treeJoin = fieldJoin.join("trees");
             
-            query.select(root).distinct(true);
             Subquery<Long> treeCount = query.subquery(Long.class);
             Root<Farm> subRoot = treeCount.from(Farm.class);
             
@@ -65,8 +68,7 @@ public class FarmSpecs {
             
             Join<Farm, Field> fieldJoin = root.join("fields");
             Join<Field, Harvest> harvestJoin = fieldJoin.join("harvests");
-            
-            query.select(root).distinct(true);
+
             Subquery<Double> productivity = query.subquery(Double.class);
             Root<Farm> subRoot = productivity.from(Farm.class);
             
