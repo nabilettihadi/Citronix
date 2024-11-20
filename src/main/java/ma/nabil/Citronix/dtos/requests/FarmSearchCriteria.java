@@ -1,6 +1,7 @@
 package ma.nabil.Citronix.dtos.requests;
 
 import lombok.Data;
+
 import java.time.LocalDate;
 
 @Data

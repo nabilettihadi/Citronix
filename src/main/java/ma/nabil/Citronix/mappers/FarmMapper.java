@@ -9,11 +9,11 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring", uses = {FieldMapper.class})
 public interface FarmMapper {
-    
+
     Farm toEntity(FarmRequest request);
-    
+
     FarmResponse toResponse(Farm farm);
-    
+
     @Mapping(target = "id", ignore = true)
     void updateEntity(@MappingTarget Farm farm, FarmRequest request);
 }

@@ -9,13 +9,13 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring", uses = {TreeMapper.class, HarvestMapper.class})
 public interface FieldMapper {
-    
+
     @Mapping(target = "farm", ignore = true)
     Field toEntity(FieldRequest request);
-    
+
     @Mapping(target = "farmId", source = "farm.id")
     FieldResponse toResponse(Field field);
-    
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "farm", ignore = true)
     void updateEntity(@MappingTarget Field field, FieldRequest request);

@@ -18,7 +18,7 @@ import java.util.List;
 public class HarvestRequest {
     @NotNull(message = "La date de récolte est obligatoire")
     private LocalDate harvestDate;
-    
+
     @Valid
     private List<HarvestDetailRequest> harvestDetails = new ArrayList<>();
 }

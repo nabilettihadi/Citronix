@@ -115,19 +115,19 @@ public class FarmServiceImpl implements FarmService {
     }
 
     @Override
-@Transactional(readOnly = true)
-public List<FarmResponse> search(FarmSearchCriteria criteria) {
-    Specification<Farm> spec = Specification.<Farm>where(null)
-            .and(FarmSpecs.nameLike(criteria.getName()))
-            .and(FarmSpecs.locationLike(criteria.getLocation()))
-            .and(FarmSpecs.areaBetween(criteria.getMinArea(), criteria.getMaxArea()))
-            .and(FarmSpecs.creationDateBetween(criteria.getStartDate(), criteria.getEndDate()))
-            .and(FarmSpecs.hasMinTrees(criteria.getMinTrees()))
-            .and(FarmSpecs.hasMinProductivity(criteria.getMinProductivity()));
+    @Transactional(readOnly = true)
+    public List<FarmResponse> search(FarmSearchCriteria criteria) {
+        Specification<Farm> spec = Specification.<Farm>where(null)
+                .and(FarmSpecs.nameLike(criteria.getName()))
+                .and(FarmSpecs.locationLike(criteria.getLocation()))
+                .and(FarmSpecs.areaBetween(criteria.getMinArea(), criteria.getMaxArea()))
+                .and(FarmSpecs.creationDateBetween(criteria.getStartDate(), criteria.getEndDate()))
+                .and(FarmSpecs.hasMinTrees(criteria.getMinTrees()))
+                .and(FarmSpecs.hasMinProductivity(criteria.getMinProductivity()));
 
-    return farmRepository.findAll(spec)
-            .stream()
-            .map(farmMapper::toResponse)
-            .collect(Collectors.toList());
-}
+        return farmRepository.findAll(spec)
+                .stream()
+                .map(farmMapper::toResponse)
+                .collect(Collectors.toList());
+    }
 }

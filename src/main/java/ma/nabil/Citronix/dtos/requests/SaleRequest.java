@@ -17,15 +17,15 @@ import java.time.LocalDate;
 public class SaleRequest {
     @NotNull(message = "La date de vente est obligatoire")
     private LocalDate saleDate;
-    
+
     @Positive(message = "Le prix unitaire doit être positif")
     private Double unitPrice;
-    
+
     @NotBlank(message = "Le client est obligatoire")
     private String client;
-    
+
     @Positive(message = "La quantité doit être positive")
     private Double quantity;
-    
+
     private HarvestRequest harvest;
 }

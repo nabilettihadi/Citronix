@@ -9,16 +9,16 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface TreeMapper {
-    
+
     @Mapping(target = "field", ignore = true)
     @Mapping(target = "harvestDetails", ignore = true)
     Tree toEntity(TreeRequest request);
-    
+
     @Mapping(target = "fieldId", source = "field.id")
     @Mapping(target = "age", expression = "java(tree.getAge())")
     @Mapping(target = "productivity", expression = "java(tree.getProductivity())")
     TreeResponse toResponse(Tree tree);
-    
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "field", ignore = true)
     @Mapping(target = "harvestDetails", ignore = true)

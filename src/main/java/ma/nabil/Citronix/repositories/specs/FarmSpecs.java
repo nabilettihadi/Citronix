@@ -1,10 +1,12 @@
 package ma.nabil.Citronix.repositories.specs;
 
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import ma.nabil.Citronix.entities.Farm;
 import ma.nabil.Citronix.entities.Field;
-import ma.nabil.Citronix.entities.Tree;
 import ma.nabil.Citronix.entities.Harvest;
+import ma.nabil.Citronix.entities.Tree;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
@@ -46,16 +48,16 @@ public class FarmSpecs {
     public static Specification<Farm> hasMinTrees(Integer minTrees) {
         return (root, query, cb) -> {
             if (minTrees == null) return null;
-            
+
             Join<Farm, Field> fieldJoin = root.join("fields");
             Join<Field, Tree> treeJoin = fieldJoin.join("trees");
-            
+
             Subquery<Long> treeCount = query.subquery(Long.class);
             Root<Farm> subRoot = treeCount.from(Farm.class);
-            
+
             treeCount.select(cb.count(subRoot.join("fields").join("trees")))
                     .where(cb.equal(subRoot, root));
-            
+
             return cb.greaterThanOrEqualTo(treeCount, minTrees.longValue());
         };
     }
@@ -63,16 +65,16 @@ public class FarmSpecs {
     public static Specification<Farm> hasMinProductivity(Double minProductivity) {
         return (root, query, cb) -> {
             if (minProductivity == null) return null;
-            
+
             Join<Farm, Field> fieldJoin = root.join("fields");
             Join<Field, Harvest> harvestJoin = fieldJoin.join("harvests");
-            
+
             Subquery<Double> productivity = query.subquery(Double.class);
             Root<Farm> subRoot = productivity.from(Farm.class);
-            
+
             productivity.select(cb.sum(subRoot.join("fields").join("harvests").get("totalQuantity")))
-                      .where(cb.equal(subRoot, root));
-            
+                    .where(cb.equal(subRoot, root));
+
             return cb.greaterThanOrEqualTo(productivity, minProductivity);
         };
     }

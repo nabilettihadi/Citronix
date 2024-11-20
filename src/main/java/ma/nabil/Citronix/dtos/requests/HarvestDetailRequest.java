@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 public class HarvestDetailRequest {
     @Positive(message = "La quantité doit être positive")
     private Double quantity;
-    
+
     private TreeRequest tree;
 }
