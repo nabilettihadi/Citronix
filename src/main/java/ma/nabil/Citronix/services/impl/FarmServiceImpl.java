@@ -117,7 +117,7 @@ public class FarmServiceImpl implements FarmService {
     @Override
 @Transactional(readOnly = true)
 public List<FarmResponse> search(FarmSearchCriteria criteria) {
-    Specification<Farm> spec = Specification.where(null)
+    Specification<Farm> spec = Specification.<Farm>where(null)
             .and(FarmSpecs.nameLike(criteria.getName()))
             .and(FarmSpecs.locationLike(criteria.getLocation()))
             .and(FarmSpecs.areaBetween(criteria.getMinArea(), criteria.getMaxArea()))
