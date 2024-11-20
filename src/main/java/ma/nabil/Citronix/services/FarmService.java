@@ -14,4 +14,6 @@ public interface FarmService {
     FarmResponse getById(Long id);
 
     List<FarmResponse> getAll();
+
+    void delete(Long id);
 }

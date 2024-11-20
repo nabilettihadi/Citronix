@@ -57,6 +57,14 @@ public class FarmServiceImpl implements FarmService {
                 .orElseThrow(() -> new BusinessException("Ferme non trouvée avec l'id: " + id));
     }
 
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        Farm farm = getFarmById(id);
+        farmRepository.delete(farm);
+    }
+
+
     private void validateFarmCreation(FarmRequest request) {
         if (farmRepository.existsByNameIgnoreCase(request.getName())) {
             throw new BusinessException("Une ferme avec ce nom existe déjà");
