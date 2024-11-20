@@ -6,4 +6,6 @@ import ma.nabil.Citronix.dtos.responses.FarmResponse;
 
 public interface FarmService {
     FarmResponse create(FarmRequest request);
+    FarmResponse update(Long id, FarmRequest request);
+
 }
