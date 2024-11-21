@@ -8,14 +8,11 @@ import ma.nabil.Citronix.entities.Farm;
 import ma.nabil.Citronix.exceptions.BusinessException;
 import ma.nabil.Citronix.mappers.FarmMapper;
 import ma.nabil.Citronix.repositories.FarmRepository;
-import ma.nabil.Citronix.repositories.specs.FarmSpecs;
 import ma.nabil.Citronix.services.FarmService;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -117,17 +114,8 @@ public class FarmServiceImpl implements FarmService {
     @Override
     @Transactional(readOnly = true)
     public List<FarmResponse> search(FarmSearchCriteria criteria) {
-        Specification<Farm> spec = Specification.<Farm>where(null)
-                .and(FarmSpecs.nameLike(criteria.getName()))
-                .and(FarmSpecs.locationLike(criteria.getLocation()))
-                .and(FarmSpecs.areaBetween(criteria.getMinArea(), criteria.getMaxArea()))
-                .and(FarmSpecs.creationDateBetween(criteria.getStartDate(), criteria.getEndDate()))
-                .and(FarmSpecs.hasMinTrees(criteria.getMinTrees()))
-                .and(FarmSpecs.hasMinProductivity(criteria.getMinProductivity()));
-
-        return farmRepository.findAll(spec)
-                .stream()
+        return farmRepository.searchFarms(criteria).stream()
                 .map(farmMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
