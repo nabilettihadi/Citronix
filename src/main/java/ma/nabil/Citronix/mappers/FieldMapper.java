@@ -4,19 +4,16 @@ import ma.nabil.Citronix.dtos.requests.FieldRequest;
 import ma.nabil.Citronix.dtos.responses.FieldResponse;
 import ma.nabil.Citronix.entities.Field;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring", uses = {TreeMapper.class, HarvestMapper.class})
-public interface FieldMapper {
-
-    @Mapping(target = "farm", ignore = true)
+public interface FieldMapper extends GenericMapper<Field, FieldRequest, FieldResponse> {
+    @Override
     Field toEntity(FieldRequest request);
 
-    @Mapping(target = "farmId", source = "farm.id")
+    @Override
     FieldResponse toResponse(Field field);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "farm", ignore = true)
+    @Override
     void updateEntity(@MappingTarget Field field, FieldRequest request);
 }
