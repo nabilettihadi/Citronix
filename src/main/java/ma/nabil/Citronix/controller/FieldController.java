@@ -1,5 +1,6 @@
 package ma.nabil.Citronix.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ma.nabil.Citronix.dtos.requests.FieldRequest;
 import ma.nabil.Citronix.dtos.responses.FieldResponse;
@@ -7,7 +8,6 @@ import ma.nabil.Citronix.services.FieldService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
