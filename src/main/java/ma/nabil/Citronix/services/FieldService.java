@@ -7,18 +7,18 @@ import java.util.List;
 
 public interface FieldService {
     FieldResponse create(Long farmId, FieldRequest request);
-    
+
     FieldResponse update(Long id, FieldRequest request);
-    
+
     FieldResponse getById(Long id);
-    
+
     List<FieldResponse> getByFarmId(Long farmId);
-    
+
     void delete(Long id);
-    
+
     void validateTreeDensity(Long fieldId, int numberOfTrees);
-    
+
     void validateFieldArea(Long farmId, Double fieldArea);
-    
+
     Double calculateAvailableArea(Long farmId);
 }
