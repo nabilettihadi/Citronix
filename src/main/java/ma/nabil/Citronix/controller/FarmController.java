@@ -1,15 +1,14 @@
-package ma.nabil.Citronix.controllers;
-
-import lombok.RequiredArgsConstructor;
-import ma.nabil.Citronix.dtos.requests.FarmRequest;
-import ma.nabil.Citronix.dtos.responses.FarmResponse;
-import ma.nabil.Citronix.dtos.search.FarmSearchCriteria;
-import ma.nabil.Citronix.services.FarmService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+package ma.nabil.Citronix.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import ma.nabil.Citronix.dtos.requests.FarmRequest;
+import ma.nabil.Citronix.dtos.requests.FarmSearchCriteria;
+import ma.nabil.Citronix.dtos.responses.FarmResponse;
+import ma.nabil.Citronix.services.FarmService;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
