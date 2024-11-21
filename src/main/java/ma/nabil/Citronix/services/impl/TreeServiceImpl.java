@@ -27,11 +27,11 @@ public class TreeServiceImpl implements TreeService {
     @Transactional
     public TreeResponse create(Long fieldId, TreeRequest request) {
         validateTreeCreation(fieldId, request);
-        
+
         Field field = getFieldById(fieldId);
         Tree tree = treeMapper.toEntity(request);
         tree.setField(field);
-        
+
         tree = treeRepository.save(tree);
         return treeMapper.toResponse(tree);
     }
@@ -74,11 +74,11 @@ public class TreeServiceImpl implements TreeService {
         Field field = getFieldById(fieldId);
         long currentTrees = treeRepository.countByFieldId(fieldId);
         double maxTrees = field.getArea() / 100; // 100 arbres par hectare
-        
+
         if (currentTrees >= maxTrees) {
             throw new BusinessException(
-                String.format("Densité maximale atteinte: %.0f arbres autorisés pour %.0f m²", 
-                    maxTrees, field.getArea())
+                    String.format("Densité maximale atteinte: %.0f arbres autorisés pour %.0f m²",
+                            maxTrees, field.getArea())
             );
         }
     }
@@ -102,7 +102,7 @@ public class TreeServiceImpl implements TreeService {
         if (plantingDate == null) {
             throw new BusinessException("La date de plantation est obligatoire");
         }
-        
+
         int month = plantingDate.getMonthValue();
         if (month < 3 || month > 5) {
             throw new BusinessException("Les arbres ne peuvent être plantés qu'entre mars et mai");
