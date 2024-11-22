@@ -21,11 +21,11 @@ public class HarvestDetailController {
 
     @PostMapping("/harvests/{harvestId}")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Créer un détail", description = "Ajoute un nouveau détail à une récolte")
+    @Operation(summary = "Ajouter un détail", description = "Ajoute un nouveau détail à une récolte existante")
     public HarvestDetailResponse create(
             @PathVariable Long harvestId,
             @Valid @RequestBody HarvestDetailRequest request) {
-        return harvestDetailService.create(harvestId, request);
+        return harvestDetailService.addDetail(harvestId, request);
     }
 
     @GetMapping("/{id}")

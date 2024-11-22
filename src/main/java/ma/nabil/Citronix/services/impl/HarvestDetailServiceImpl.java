@@ -26,20 +26,16 @@ public class HarvestDetailServiceImpl implements HarvestDetailService {
     private final HarvestDetailMapper harvestDetailMapper;
 
     @Override
-    @Transactional
-    public HarvestDetailResponse create(Long harvestId, HarvestDetailRequest request) {
+    public HarvestDetailResponse addDetail(Long harvestId, HarvestDetailRequest request) {
         Harvest harvest = getHarvestById(harvestId);
         Tree tree = getTreeById(request.getTreeId());
 
         validateHarvestDetail(harvest, tree, request);
+        HarvestDetail detail = addHarvestDetail(harvest, request);
 
-        HarvestDetail detail = HarvestDetail.builder()
-                .harvest(harvest)
-                .tree(tree)
-                .quantity(request.getQuantity())
-                .build();
+        calculateTotalQuantity(harvest);
+        harvestRepository.save(harvest);
 
-        detail = harvestDetailRepository.save(detail);
         return harvestDetailMapper.toResponse(detail);
     }
 
@@ -66,32 +62,32 @@ public class HarvestDetailServiceImpl implements HarvestDetailService {
     }
 
     @Override
-@Transactional
-public HarvestDetailResponse update(Long id, HarvestDetailRequest request) {
-    HarvestDetail detail = getHarvestDetailById(id);
-    Tree tree = getTreeById(request.getTreeId());
-    
-    if (!detail.getTree().getId().equals(tree.getId())) {
-        throw new BusinessException("Impossible de modifier l'arbre d'un détail de récolte");
-    }
-    
-    detail.setQuantity(request.getQuantity());
-    detail = harvestDetailRepository.save(detail);
-    
-    Harvest harvest = detail.getHarvest();
-    calculateTotalQuantity(harvest);
-    harvestRepository.save(harvest);
-    
-    return harvestDetailMapper.toResponse(detail);
-}
+    @Transactional
+    public HarvestDetailResponse update(Long id, HarvestDetailRequest request) {
+        HarvestDetail detail = getHarvestDetailById(id);
+        Tree tree = getTreeById(request.getTreeId());
 
-private void calculateTotalQuantity(Harvest harvest) {
-    harvest.setTotalQuantity(
-        harvest.getHarvestDetails().stream()
-            .mapToDouble(HarvestDetail::getQuantity)
-            .sum()
-    );
-}
+        if (!detail.getTree().getId().equals(tree.getId())) {
+            throw new BusinessException("Impossible de modifier l'arbre d'un détail de récolte");
+        }
+
+        detail.setQuantity(request.getQuantity());
+        detail = harvestDetailRepository.save(detail);
+
+        Harvest harvest = detail.getHarvest();
+        calculateTotalQuantity(harvest);
+        harvestRepository.save(harvest);
+
+        return harvestDetailMapper.toResponse(detail);
+    }
+
+    private void calculateTotalQuantity(Harvest harvest) {
+        harvest.setTotalQuantity(
+                harvest.getHarvestDetails().stream()
+                        .mapToDouble(HarvestDetail::getQuantity)
+                        .sum()
+        );
+    }
 
     @Override
     @Transactional
@@ -104,6 +100,14 @@ private void calculateTotalQuantity(Harvest harvest) {
     @Transactional(readOnly = true)
     public Double calculateTotalProductionForTree(Long treeId) {
         return harvestDetailRepository.calculateTotalProductionForTree(treeId);
+    }
+
+    private HarvestDetail addHarvestDetail(Harvest harvest, HarvestDetailRequest request) {
+        HarvestDetail detail = new HarvestDetail();
+        detail.setHarvest(harvest);
+        detail.setTree(getTreeById(request.getTreeId()));
+        detail.setQuantity(request.getQuantity());
+        return harvestDetailRepository.save(detail);
     }
 
     private void validateHarvestDetail(Harvest harvest, Tree tree, HarvestDetailRequest request) {

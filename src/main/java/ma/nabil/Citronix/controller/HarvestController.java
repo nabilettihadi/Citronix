@@ -4,9 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ma.nabil.Citronix.dtos.requests.HarvestDetailRequest;
 import ma.nabil.Citronix.dtos.requests.HarvestRequest;
-import ma.nabil.Citronix.dtos.responses.HarvestDetailResponse;
 import ma.nabil.Citronix.dtos.responses.HarvestResponse;
 import ma.nabil.Citronix.enums.Season;
 import ma.nabil.Citronix.services.HarvestService;
@@ -64,13 +62,6 @@ public class HarvestController {
     @Operation(summary = "Supprimer une récolte", description = "Supprime une récolte et tous ses détails associés")
     public void delete(@PathVariable Long id) {
         harvestService.delete(id);
-    }
-
-    @PostMapping("/{id}/details")
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Ajouter un détail", description = "Ajoute un nouveau détail à une récolte existante")
-    public HarvestDetailResponse addDetail(@PathVariable Long id, @Valid @RequestBody HarvestDetailRequest request) {
-        return harvestService.addDetail(id, request);
     }
 
     @GetMapping("/{id}/quantity")

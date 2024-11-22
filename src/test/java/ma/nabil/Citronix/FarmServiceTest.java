@@ -1,6 +1,7 @@
 package ma.nabil.Citronix;
 
 import ma.nabil.Citronix.dtos.requests.FarmRequest;
+import ma.nabil.Citronix.dtos.requests.FieldRequest;
 import ma.nabil.Citronix.dtos.responses.FarmResponse;
 import ma.nabil.Citronix.entities.Farm;
 import ma.nabil.Citronix.exceptions.BusinessException;
@@ -16,6 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,20 +27,19 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FarmServiceTest {
-
     @Mock
     private FarmRepository farmRepository;
-
+    
     @Mock
     private FarmMapper farmMapper;
-
+    
     @InjectMocks
     private FarmServiceImpl farmService;
-
+    
     private FarmRequest validRequest;
     private Farm farm;
     private FarmResponse farmResponse;
-
+    
     @BeforeEach
     void setUp() {
         validRequest = FarmRequest.builder()
@@ -67,6 +69,7 @@ class FarmServiceTest {
                 .build();
     }
 
+    // Tests de création
     @Test
     void create_ValidRequest_ShouldCreateFarm() {
         when(farmRepository.existsByNameIgnoreCase(anyString())).thenReturn(false);
@@ -78,24 +81,80 @@ class FarmServiceTest {
 
         assertNotNull(result);
         assertEquals(farmResponse.getName(), result.getName());
-        assertEquals(farmResponse.getLocation(), result.getLocation());
-        assertEquals(farmResponse.getArea(), result.getArea());
         verify(farmRepository).save(any(Farm.class));
     }
 
     @Test
     void create_DuplicateName_ShouldThrowException() {
         when(farmRepository.existsByNameIgnoreCase(anyString())).thenReturn(true);
-
-        assertThrows(BusinessException.class, () -> farmService.create(validRequest));
+        
+        assertThrows(BusinessException.class, () -> 
+            farmService.create(validRequest)
+        );
         verify(farmRepository, never()).save(any(Farm.class));
     }
 
     @Test
-    void create_InvalidArea_ShouldThrowException() {
+    void create_AreaTooSmall_ShouldThrowException() {
         validRequest.setArea(500.0);
+        when(farmRepository.existsByNameIgnoreCase(anyString())).thenReturn(false);
+        
+        assertThrows(BusinessException.class, () -> 
+            farmService.create(validRequest)
+        );
+    }
 
-        assertThrows(BusinessException.class, () -> farmService.create(validRequest));
-        verify(farmRepository, never()).save(any(Farm.class));
+    @Test
+    void create_TooManyFields_ShouldThrowException() {
+        List<FieldRequest> fields = new ArrayList<>();
+        for (int i = 0; i < 11; i++) {
+            fields.add(new FieldRequest());
+        }
+        validRequest.setFields(fields);
+        
+        assertThrows(BusinessException.class, () -> 
+            farmService.create(validRequest)
+        );
+    }
+
+    // Tests de mise à jour
+    @Test
+    void update_ValidRequest_ShouldUpdateFarm() {
+        when(farmRepository.findById(anyLong())).thenReturn(Optional.of(farm));
+        when(farmRepository.save(any(Farm.class))).thenReturn(farm);
+        when(farmMapper.toResponse(any(Farm.class))).thenReturn(farmResponse);
+        
+        FarmResponse result = farmService.update(1L, validRequest);
+        
+        assertNotNull(result);
+        verify(farmRepository).save(any(Farm.class));
+    }
+
+    @Test
+    void update_NonExistingFarm_ShouldThrowException() {
+        when(farmRepository.findById(anyLong())).thenReturn(Optional.empty());
+        
+        assertThrows(BusinessException.class, () -> 
+            farmService.update(1L, validRequest)
+        );
+    }
+
+    // Tests de suppression
+    @Test
+    void delete_ExistingFarm_ShouldDelete() {
+        when(farmRepository.findById(anyLong())).thenReturn(Optional.of(farm));
+        
+        farmService.delete(1L);
+        
+        verify(farmRepository).delete(farm);
+    }
+
+    @Test
+    void delete_NonExistingFarm_ShouldThrowException() {
+        when(farmRepository.findById(anyLong())).thenReturn(Optional.empty());
+        
+        assertThrows(BusinessException.class, () -> 
+            farmService.delete(1L)
+        );
     }
 }

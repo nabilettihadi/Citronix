@@ -6,7 +6,7 @@ import ma.nabil.Citronix.dtos.responses.HarvestDetailResponse;
 import java.util.List;
 
 public interface HarvestDetailService {
-    HarvestDetailResponse create(Long harvestId, HarvestDetailRequest request);
+    HarvestDetailResponse addDetail(Long harvestId, HarvestDetailRequest request);
 
     HarvestDetailResponse getById(Long id);
 
