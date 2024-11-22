@@ -44,8 +44,8 @@ Le système propose une API REST complète pour des opérations de gestion flexi
 
 ### Backend
 
-- **Java 17**
-- **Spring Boot 3.3.5**
+- Java 17
+- Spring Boot 3.3.5
 - Spring Data JPA
 - PostgreSQL
 - Lombok & MapStruct
@@ -68,6 +68,16 @@ GET /api/v1/farms              # Liste des fermes
 POST /api/v1/farms             # Création d'une ferme
 PUT /api/v1/farms/{id}         # Mise à jour d'une ferme
 DELETE /api/v1/farms/{id}      # Suppression d'une ferme
+```
+
+### 🌾 Gestion des Champs
+
+```http
+GET /api/v1/fields             # Liste des champs
+POST /api/v1/fields            # Création d'un champ
+PUT /api/v1/fields/{id}        # Mise à jour d'un champ
+DELETE /api/v1/fields/{id}     # Suppression d'un champ
+GET /api/v1/fields/farm/{farmId} # Champs d'une ferme
 ```
 
 ### 🌳 Gestion des Arbres
@@ -98,6 +108,18 @@ GET /api/v1/harvest-details/{id} # Détail spécifique
 DELETE /api/v1/harvest-details/{id} # Supprimer un détail
 ```
 
+### 💰 Gestion des Ventes
+
+```http
+GET /api/v1/sales                # Liste des ventes
+POST /api/v1/sales               # Création d'une vente
+GET /api/v1/sales/{id}           # Détails d'une vente
+PUT /api/v1/sales/{id}           # Mise à jour d'une vente
+DELETE /api/v1/sales/{id}        # Suppression d'une vente
+GET /api/v1/sales/harvests/{harvestId} # Ventes par récolte
+GET /api/v1/sales/total-revenue  # Revenu total des ventes
+```
+
 ## 🔧 Installation
 
 ### Prérequis
@@ -110,12 +132,15 @@ mvn -version # Maven 3.9 ou supérieur
 ### Configuration
 
 1. Cloner le repository
-   ```bash
-   https://github.com/nabilettihadi/Citronix.git
-   ```
-   ```bash
-   cd Citronix
-   ```
+
+```bash
+https://github.com/nabilettihadi/Citronix.git
+```
+
+```bash
+cd Citronix
+```
+
 2. Configurer la base de données dans `application.properties`
 
 ```properties
@@ -180,7 +205,7 @@ citronix/
 
 ## 📊 Diagramme de Classes
 
-![Class Diagram](docs/diagrams/Diagramme de Classe Citronix.png)
+![Class Diagram](UML/Diagramme de Classe Citronix.png)
 
 ## 🤝 Contribution
 
