@@ -28,10 +28,10 @@ public class SaleServiceImpl implements SaleService {
     public SaleResponse create(Long harvestId, SaleRequest request) {
         Harvest harvest = getHarvestById(harvestId);
         validateSale(harvest, request);
-        
+
         Sale sale = saleMapper.toEntity(request);
         sale.setHarvest(harvest);
-        
+
         sale = saleRepository.save(sale);
         return saleMapper.toResponse(sale);
     }
@@ -80,8 +80,12 @@ public class SaleServiceImpl implements SaleService {
     }
 
     private void validateSale(Harvest harvest, SaleRequest request) {
-        if (request.getQuantity() > getRemainingQuantity(harvest)) {
-            throw new BusinessException("La quantité vendue dépasse la quantité disponible");
+        Double remainingQuantity = getRemainingQuantity(harvest);
+        if (request.getQuantity() > remainingQuantity) {
+            throw new BusinessException(
+                    String.format("Quantité insuffisante. Disponible: %.2f kg, Demandée: %.2f kg",
+                            remainingQuantity, request.getQuantity())
+            );
         }
     }
 

@@ -8,16 +8,16 @@ import java.util.List;
 
 public interface SaleService {
     SaleResponse create(Long harvestId, SaleRequest request);
-    
+
     SaleResponse getById(Long id);
-    
+
     List<SaleResponse> getByHarvestId(Long harvestId);
-    
+
     List<SaleResponse> getByDateRange(LocalDate startDate, LocalDate endDate);
-    
+
     List<SaleResponse> getByClient(String client);
-    
+
     Double calculateTotalRevenue(Long harvestId);
-    
+
     void delete(Long id);
 }

@@ -30,15 +30,15 @@ public class HarvestDetailServiceImpl implements HarvestDetailService {
     public HarvestDetailResponse create(Long harvestId, HarvestDetailRequest request) {
         Harvest harvest = getHarvestById(harvestId);
         Tree tree = getTreeById(request.getTreeId());
-        
+
         validateHarvestDetail(harvest, tree, request);
-        
+
         HarvestDetail detail = HarvestDetail.builder()
                 .harvest(harvest)
                 .tree(tree)
                 .quantity(request.getQuantity())
                 .build();
-                
+
         detail = harvestDetailRepository.save(detail);
         return harvestDetailMapper.toResponse(detail);
     }
@@ -81,13 +81,6 @@ public class HarvestDetailServiceImpl implements HarvestDetailService {
     private void validateHarvestDetail(Harvest harvest, Tree tree, HarvestDetailRequest request) {
         if (!tree.getField().getId().equals(harvest.getField().getId())) {
             throw new BusinessException("L'arbre n'appartient pas au champ spécifié");
-        }
-
-        if (request.getQuantity() > tree.getProductivity()) {
-            throw new BusinessException(
-                String.format("La quantité récoltée (%f) dépasse la productivité de l'arbre (%f)",
-                    request.getQuantity(), tree.getProductivity())
-            );
         }
 
         if (harvestDetailRepository.existsByHarvestIdAndTreeId(harvest.getId(), tree.getId())) {

@@ -18,7 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -73,7 +74,7 @@ class TreeServiceTest {
     @Test
     void create_InvalidPlantingDate_ShouldThrowException() {
         validRequest.setPlantingDate(LocalDate.of(2024, 1, 15));
-        
+
         assertThrows(BusinessException.class, () -> treeService.create(1L, validRequest));
         verify(treeRepository, never()).save(any(Tree.class));
     }
