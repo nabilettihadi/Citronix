@@ -62,6 +62,14 @@ public class SaleController {
         return saleService.calculateTotalRevenue(harvestId);
     }
 
+    @PutMapping("/{id}")
+    @Operation(summary = "Modifier une vente", description = "Met à jour les informations d'une vente")
+    public SaleResponse update(
+            @PathVariable Long id,
+            @Valid @RequestBody SaleRequest request) {
+        return saleService.update(id, request);
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Supprimer une vente", description = "Supprime une vente")

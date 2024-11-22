@@ -14,6 +14,8 @@ public interface HarvestDetailService {
 
     List<HarvestDetailResponse> getByTreeId(Long treeId);
 
+    HarvestDetailResponse update(Long id, HarvestDetailRequest request);
+
     void delete(Long id);
 
     Double calculateTotalProductionForTree(Long treeId);

@@ -73,7 +73,7 @@ public class TreeServiceImpl implements TreeService {
     public void validateTreeDensity(Long fieldId) {
         Field field = getFieldById(fieldId);
         long currentTrees = treeRepository.countByFieldId(fieldId);
-        double maxTrees = field.getArea() / 100; // 100 arbres par hectare
+        double maxTrees = field.getArea() / 100;
 
         if (currentTrees >= maxTrees) {
             throw new BusinessException(

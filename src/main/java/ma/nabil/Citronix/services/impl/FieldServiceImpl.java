@@ -70,7 +70,7 @@ public class FieldServiceImpl implements FieldService {
     @Override
     public void validateTreeDensity(Long fieldId, int numberOfTrees) {
         Field field = getFieldById(fieldId);
-        double maxTrees = field.getArea() / 100; // 100 arbres par hectare
+        double maxTrees = field.getArea() / 100;
         if (numberOfTrees > maxTrees) {
             throw new BusinessException("Densité maximale dépassée: " + maxTrees + " arbres autorisés pour " + field.getArea() + " m²");
         }

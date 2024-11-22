@@ -172,14 +172,6 @@ public class HarvestServiceImpl implements HarvestService {
             throw new BusinessException("L'arbre n'appartient pas au champ spécifié");
         }
 
-        // Suppression de la vérification de la quantité par rapport à la productivité
-        // if (detail.getQuantity() > tree.getProductivity()) {
-        //     throw new BusinessException(
-        //             String.format("La quantité récoltée (%f) dépasse la productivité de l'arbre (%f)",
-        //                     detail.getQuantity(), tree.getProductivity())
-        //     );
-        // }
-
         if (harvestRepository.existsByTreeIdAndSeasonAndYear(tree.getId(), season, year)) {
             throw new BusinessException("Cet arbre a déjà été récolté cette saison");
         }
@@ -201,8 +193,8 @@ public class HarvestServiceImpl implements HarvestService {
                 .quantity(detail.getQuantity())
                 .build();
 
-        harvest.addDetail(harvestDetail);  // Utiliser la nouvelle méthode utilitaire
-        return harvestDetailRepository.save(harvestDetail);  // Sauvegarder explicitement le détail
+        harvest.addDetail(harvestDetail);
+        return harvestDetailRepository.save(harvestDetail);
     }
 
     private Harvest getHarvestById(Long id) {

@@ -19,5 +19,7 @@ public interface SaleService {
 
     Double calculateTotalRevenue(Long harvestId);
 
+    SaleResponse update(Long id, SaleRequest request);
+
     void delete(Long id);
 }

@@ -46,6 +46,14 @@ public class HarvestDetailController {
         return harvestDetailService.getByTreeId(treeId);
     }
 
+    @PutMapping("/{id}")
+    @Operation(summary = "Modifier un détail", description = "Met à jour la quantité d'un détail de récolte")
+    public HarvestDetailResponse update(
+            @PathVariable Long id,
+            @Valid @RequestBody HarvestDetailRequest request) {
+        return harvestDetailService.update(id, request);
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Supprimer un détail", description = "Supprime un détail de récolte")

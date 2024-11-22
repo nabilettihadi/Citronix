@@ -66,6 +66,34 @@ public class HarvestDetailServiceImpl implements HarvestDetailService {
     }
 
     @Override
+@Transactional
+public HarvestDetailResponse update(Long id, HarvestDetailRequest request) {
+    HarvestDetail detail = getHarvestDetailById(id);
+    Tree tree = getTreeById(request.getTreeId());
+    
+    if (!detail.getTree().getId().equals(tree.getId())) {
+        throw new BusinessException("Impossible de modifier l'arbre d'un détail de récolte");
+    }
+    
+    detail.setQuantity(request.getQuantity());
+    detail = harvestDetailRepository.save(detail);
+    
+    Harvest harvest = detail.getHarvest();
+    calculateTotalQuantity(harvest);
+    harvestRepository.save(harvest);
+    
+    return harvestDetailMapper.toResponse(detail);
+}
+
+private void calculateTotalQuantity(Harvest harvest) {
+    harvest.setTotalQuantity(
+        harvest.getHarvestDetails().stream()
+            .mapToDouble(HarvestDetail::getQuantity)
+            .sum()
+    );
+}
+
+    @Override
     @Transactional
     public void delete(Long id) {
         HarvestDetail detail = getHarvestDetailById(id);

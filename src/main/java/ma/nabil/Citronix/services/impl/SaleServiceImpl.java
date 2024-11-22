@@ -73,6 +73,32 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
+@Transactional
+public SaleResponse update(Long id, SaleRequest request) {
+    Sale sale = getSaleById(id);
+    
+    double currentQuantity = sale.getQuantity();
+    double newQuantity = request.getQuantity();
+    double difference = newQuantity - currentQuantity;
+    
+    Double remainingQuantity = getRemainingQuantity(sale.getHarvest());
+    if (difference > remainingQuantity) {
+        throw new BusinessException(
+            String.format("Quantité insuffisante. Disponible: %.2f kg, Demandée: %.2f kg",
+                remainingQuantity, difference)
+        );
+    }
+    
+    sale.setSaleDate(request.getSaleDate());
+    sale.setUnitPrice(request.getUnitPrice());
+    sale.setClient(request.getClient());
+    sale.setQuantity(request.getQuantity());
+    
+    sale = saleRepository.save(sale);
+    return saleMapper.toResponse(sale);
+}
+
+    @Override
     @Transactional
     public void delete(Long id) {
         Sale sale = getSaleById(id);
