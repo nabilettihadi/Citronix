@@ -18,5 +18,7 @@ public class TreeResponse {
     private LocalDate plantingDate;
     private int age;
     private double productivity;
+    
+    @Builder.Default
     private List<HarvestDetailResponse> harvestDetails = new ArrayList<>();
 }

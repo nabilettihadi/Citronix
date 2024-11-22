@@ -32,9 +32,4 @@ public class HarvestDetail {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tree_id", nullable = false)
     private Tree tree;
-
-    @AssertTrue(message = "La quantité récoltée ne peut pas dépasser la productivité de l'arbre")
-    private boolean isQuantityValid() {
-        return tree != null && quantity <= tree.getProductivity();
-    }
 }

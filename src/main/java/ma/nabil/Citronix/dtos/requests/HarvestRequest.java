@@ -26,5 +26,5 @@ public class HarvestRequest {
     private Season season;
 
     @Valid
-    private List<HarvestDetailRequest> details;
+    private List<HarvestDetailRequest> harvestDetails;
 }

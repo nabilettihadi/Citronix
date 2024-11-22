@@ -89,7 +89,7 @@ public class FieldServiceImpl implements FieldService {
         }
 
         Double totalArea = fieldRepository.calculateTotalAreaByFarmId(farmId);
-        if (totalArea != null && (totalArea + fieldArea) >= farm.getArea()) {
+        if (totalArea != null && (totalArea + fieldArea) > farm.getArea()) {
             throw new BusinessException("La somme des superficies des champs ne peut pas dépasser celle de la ferme");
         }
     }

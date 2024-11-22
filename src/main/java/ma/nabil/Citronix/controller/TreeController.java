@@ -46,11 +46,6 @@ public class TreeController {
         return treeService.calculateProductivity(id);
     }
 
-    @GetMapping("/{id}/age")
-    @Operation(summary = "Calculer l'âge", description = "Calcule l'âge actuel d'un arbre")
-    public Integer getAge(@PathVariable Long id) {
-        return treeService.calculateAge(id);
-    }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -43,11 +43,16 @@ public class Harvest {
     @JoinColumn(name = "field_id", nullable = false)
     private Field field;
 
-    @OneToMany(mappedBy = "harvest", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "harvest", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HarvestDetail> harvestDetails = new ArrayList<>();
 
     @OneToMany(mappedBy = "harvest", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Sale> sales = new ArrayList<>();
+
+    public void addDetail(HarvestDetail detail) {
+        harvestDetails.add(detail);
+        detail.setHarvest(this);
+    }
 
     @PrePersist
     @PreUpdate

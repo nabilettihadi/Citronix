@@ -99,7 +99,7 @@ public class FarmServiceImpl implements FarmService {
                 .mapToDouble(field -> field.getArea())
                 .sum();
 
-        if (totalFieldsArea >= request.getArea()) {
+        if (totalFieldsArea > request.getArea()) {
             throw new BusinessException("La somme des superficies des champs ne peut pas dépasser celle de la ferme");
         }
 

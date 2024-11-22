@@ -4,6 +4,7 @@ import ma.nabil.Citronix.dtos.requests.TreeRequest;
 import ma.nabil.Citronix.dtos.responses.TreeResponse;
 import ma.nabil.Citronix.entities.Tree;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
@@ -12,6 +13,7 @@ public interface TreeMapper extends GenericMapper<Tree, TreeRequest, TreeRespons
     Tree toEntity(TreeRequest request);
 
     @Override
+    @Mapping(target = "harvestDetails", ignore = true)
     TreeResponse toResponse(Tree tree);
 
     @Override
