@@ -46,6 +46,14 @@ public class TreeController {
         return treeService.calculateProductivity(id);
     }
 
+    @PutMapping("/{id}")
+    @Operation(summary = "Modifier un arbre", description = "Met à jour la date de plantation et le champ d'un arbre s'il n'a pas de récoltes")
+    public TreeResponse update(
+            @PathVariable Long id,
+            @Valid @RequestBody TreeRequest request) {
+        return treeService.update(id, request);
+    }
+
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

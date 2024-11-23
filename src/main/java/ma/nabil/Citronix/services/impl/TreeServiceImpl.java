@@ -64,6 +64,32 @@ public class TreeServiceImpl implements TreeService {
 
     @Override
     @Transactional
+    public TreeResponse update(Long id, TreeRequest request) {
+        Tree tree = getTreeById(id);
+
+
+        if (!tree.getHarvestDetails().isEmpty()) {
+            throw new BusinessException("Impossible de modifier un arbre qui a déjà des récoltes");
+        }
+
+
+        validatePlantingDate(request.getPlantingDate());
+
+
+        if (request.getFieldId() != null && !request.getFieldId().equals(tree.getField().getId())) {
+            Field newField = getFieldById(request.getFieldId());
+            validateTreeDensity(request.getFieldId());
+            tree.setField(newField);
+        }
+
+        tree.setPlantingDate(request.getPlantingDate());
+        tree = treeRepository.save(tree);
+
+        return treeMapper.toResponse(tree);
+    }
+
+    @Override
+    @Transactional
     public void delete(Long id) {
         Tree tree = getTreeById(id);
         treeRepository.delete(tree);

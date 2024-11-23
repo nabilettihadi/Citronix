@@ -17,6 +17,8 @@ public class TreeRequest {
     @NotNull(message = "La date de plantation est obligatoire")
     private LocalDate plantingDate;
 
+    private Long fieldId;
+
     @AssertTrue(message = "Les arbres ne peuvent être plantés qu'entre mars et mai")
     private boolean isPlantingDateValid() {
         if (plantingDate == null) return false;

@@ -16,6 +16,8 @@ public interface TreeService {
 
     Integer calculateAge(Long id);
 
+    TreeResponse update(Long id, TreeRequest request);
+
     void delete(Long id);
 
     void validateTreeDensity(Long fieldId);
