@@ -9,7 +9,10 @@ import ma.nabil.Citronix.enums.Season;
 import ma.nabil.Citronix.exceptions.BusinessException;
 import ma.nabil.Citronix.mappers.HarvestDetailMapper;
 import ma.nabil.Citronix.mappers.HarvestMapper;
-import ma.nabil.Citronix.repositories.*;
+import ma.nabil.Citronix.repositories.FieldRepository;
+import ma.nabil.Citronix.repositories.HarvestDetailRepository;
+import ma.nabil.Citronix.repositories.HarvestRepository;
+import ma.nabil.Citronix.repositories.TreeRepository;
 import ma.nabil.Citronix.services.impl.HarvestServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,9 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,10 +44,10 @@ class HarvestServiceTest {
     private FieldRepository fieldRepository;
     @Mock
     private HarvestDetailRepository harvestDetailRepository;
-    
+
     @InjectMocks
     private HarvestServiceImpl harvestService;
-    
+
     private HarvestRequest validRequest;
     private Harvest harvest;
     private HarvestResponse harvestResponse;
@@ -55,29 +56,29 @@ class HarvestServiceTest {
     private HarvestDetail harvestDetail;
     private HarvestDetailRequest detailRequest;
     private HarvestDetailResponse detailResponse;
-    
+
     @BeforeEach
     void setUp() {
         LocalDate summerDate = LocalDate.of(2024, 7, 15);
-        
+
         field = Field.builder()
                 .id(1L)
                 .name("Test Field")
                 .area(5000.0)
                 .build();
-                
+
         tree = Tree.builder()
                 .id(1L)
                 .field(field)
                 .plantingDate(LocalDate.now().minusYears(5))
                 .build();
-                
+
         validRequest = HarvestRequest.builder()
                 .fieldId(1L)
                 .harvestDate(summerDate)
                 .season(Season.SUMMER)
                 .build();
-                
+
         harvest = Harvest.builder()
                 .id(1L)
                 .field(field)
@@ -87,18 +88,18 @@ class HarvestServiceTest {
                 .harvestDetails(new ArrayList<>())
                 .sales(new ArrayList<>())
                 .build();
-                
+
         harvestResponse = HarvestResponse.builder()
                 .id(1L)
                 .build();
-                
+
         harvestDetail = HarvestDetail.builder()
                 .id(1L)
                 .harvest(harvest)
                 .tree(tree)
                 .quantity(100.0)
                 .build();
-                
+
         detailRequest = HarvestDetailRequest.builder()
                 .treeId(1L)
                 .quantity(100.0)
@@ -112,16 +113,16 @@ class HarvestServiceTest {
 
     @Test
     void create_ValidRequest_ShouldCreate() {
+
         when(fieldRepository.findById(anyLong())).thenReturn(Optional.of(field));
-        when(harvestMapper.toEntity(any())).thenReturn(harvest);
-        when(harvestRepository.save(any())).thenReturn(harvest);
-        when(harvestMapper.toResponse(any())).thenReturn(harvestResponse);
+        when(harvestRepository.save(any(Harvest.class))).thenReturn(harvest);
+        when(harvestMapper.toResponse(any(Harvest.class))).thenReturn(harvestResponse);
 
         HarvestResponse result = harvestService.create(validRequest);
 
         assertNotNull(result);
-        verify(harvestRepository).save(any());
-        verify(harvestMapper).toEntity(any());
+        verify(harvestRepository).save(any(Harvest.class));
+        verify(harvestMapper).toResponse(any(Harvest.class));
     }
 
     @Test

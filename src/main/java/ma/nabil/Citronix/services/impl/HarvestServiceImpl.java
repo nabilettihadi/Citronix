@@ -1,28 +1,20 @@
 package ma.nabil.Citronix.services.impl;
 
 import lombok.RequiredArgsConstructor;
-import ma.nabil.Citronix.dtos.requests.HarvestDetailRequest;
 import ma.nabil.Citronix.dtos.requests.HarvestRequest;
-import ma.nabil.Citronix.dtos.responses.HarvestDetailResponse;
 import ma.nabil.Citronix.dtos.responses.HarvestResponse;
 import ma.nabil.Citronix.entities.Field;
 import ma.nabil.Citronix.entities.Harvest;
-import ma.nabil.Citronix.entities.HarvestDetail;
-import ma.nabil.Citronix.entities.Tree;
 import ma.nabil.Citronix.enums.Season;
 import ma.nabil.Citronix.exceptions.BusinessException;
-import ma.nabil.Citronix.mappers.HarvestDetailMapper;
 import ma.nabil.Citronix.mappers.HarvestMapper;
 import ma.nabil.Citronix.repositories.FieldRepository;
-import ma.nabil.Citronix.repositories.HarvestDetailRepository;
 import ma.nabil.Citronix.repositories.HarvestRepository;
-import ma.nabil.Citronix.repositories.TreeRepository;
 import ma.nabil.Citronix.services.HarvestService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,31 +23,24 @@ import java.util.List;
 public class HarvestServiceImpl implements HarvestService {
     private final HarvestRepository harvestRepository;
     private final FieldRepository fieldRepository;
-    private final TreeRepository treeRepository;
     private final HarvestMapper harvestMapper;
-    private final HarvestDetailMapper harvestDetailMapper;
-    private final HarvestDetailRepository harvestDetailRepository;
 
     @Override
     @Transactional
     public HarvestResponse create(HarvestRequest request) {
         validateHarvestCreation(request);
-
         Field field = getFieldById(request.getFieldId());
-        final Harvest harvest = harvestMapper.toEntity(request);
-        harvest.setField(field);
-        harvest.setHarvestDetails(new ArrayList<>());
 
-        if (request.getHarvestDetails() != null && !request.getHarvestDetails().isEmpty()) {
-            for (HarvestDetailRequest detail : request.getHarvestDetails()) {
-                Tree tree = getTreeById(detail.getTreeId());
-                validateHarvestDetail(field, tree, detail, harvest.getSeason(), harvest.getYear());
-                addHarvestDetail(harvest, detail);
-            }
-        }
+        Harvest harvest = Harvest.builder()
+                .field(field)
+                .harvestDate(request.getHarvestDate())
+                .season(request.getSeason())
+                .year(request.getHarvestDate().getYear())
+                .totalQuantity(0.0)
+                .build();
 
-        calculateTotalQuantity(harvest);
-        return harvestMapper.toResponse(harvestRepository.save(harvest));
+        harvest = harvestRepository.save(harvest);
+        return harvestMapper.toResponse(harvest);
     }
 
     @Override
@@ -88,12 +73,23 @@ public class HarvestServiceImpl implements HarvestService {
     }
 
     @Override
+    @Transactional
     public HarvestResponse update(Long id, HarvestRequest request) {
         Harvest harvest = getHarvestById(id);
         validateHarvestUpdate(harvest, request);
 
-        harvestMapper.updateEntity(harvest, request);
-        calculateTotalQuantity(harvest);
+        if (harvestRepository.existsByFieldIdAndSeasonAndYearAndIdNot(
+                request.getFieldId(),
+                request.getSeason(),
+                request.getHarvestDate().getYear(),
+                id)) {
+            throw new BusinessException("Une récolte existe déjà pour ce champ cette saison");
+        }
+
+        harvest.setHarvestDate(request.getHarvestDate());
+        harvest.setSeason(request.getSeason());
+        harvest.setYear(request.getHarvestDate().getYear());
+
         harvest = harvestRepository.save(harvest);
         return harvestMapper.toResponse(harvest);
     }
@@ -105,21 +101,6 @@ public class HarvestServiceImpl implements HarvestService {
             throw new BusinessException("Impossible de supprimer une récolte avec des ventes associées");
         }
         harvestRepository.delete(harvest);
-    }
-
-    @Override
-    @Transactional
-    public HarvestDetailResponse addDetail(Long harvestId, HarvestDetailRequest request) {
-        Harvest harvest = getHarvestById(harvestId);
-        Tree tree = getTreeById(request.getTreeId());
-
-        validateHarvestDetail(harvest.getField(), tree, request, harvest.getSeason(), harvest.getYear());
-        HarvestDetail detail = addHarvestDetail(harvest, request);
-
-        calculateTotalQuantity(harvest);
-        harvestRepository.save(harvest);
-
-        return harvestDetailMapper.toResponse(detail);
     }
 
     @Override
@@ -166,37 +147,6 @@ public class HarvestServiceImpl implements HarvestService {
         return Season.WINTER;
     }
 
-    private void validateHarvestDetail(Field field, Tree tree, HarvestDetailRequest detail,
-                                       Season season, Integer year) {
-        if (!tree.getField().getId().equals(field.getId())) {
-            throw new BusinessException("L'arbre n'appartient pas au champ spécifié");
-        }
-
-        if (harvestRepository.existsByTreeIdAndSeasonAndYear(tree.getId(), season, year)) {
-            throw new BusinessException("Cet arbre a déjà été récolté cette saison");
-        }
-    }
-
-    private void calculateTotalQuantity(Harvest harvest) {
-        harvest.setTotalQuantity(
-                harvest.getHarvestDetails().stream()
-                        .mapToDouble(HarvestDetail::getQuantity)
-                        .sum()
-        );
-    }
-
-    private HarvestDetail addHarvestDetail(Harvest harvest, HarvestDetailRequest detail) {
-        Tree tree = getTreeById(detail.getTreeId());
-
-        HarvestDetail harvestDetail = HarvestDetail.builder()
-                .tree(tree)
-                .quantity(detail.getQuantity())
-                .build();
-
-        harvest.addDetail(harvestDetail);
-        return harvestDetailRepository.save(harvestDetail);
-    }
-
     private Harvest getHarvestById(Long id) {
         return harvestRepository.findById(id)
                 .orElseThrow(() -> new BusinessException("Récolte non trouvée avec l'id: " + id));
@@ -207,8 +157,4 @@ public class HarvestServiceImpl implements HarvestService {
                 .orElseThrow(() -> new BusinessException("Champ non trouvé avec l'id: " + id));
     }
 
-    private Tree getTreeById(Long id) {
-        return treeRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Arbre non trouvé avec l'id: " + id));
-    }
 }

@@ -1,6 +1,5 @@
 package ma.nabil.Citronix.dtos.requests;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +8,6 @@ import lombok.NoArgsConstructor;
 import ma.nabil.Citronix.enums.Season;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @Builder
@@ -24,7 +22,4 @@ public class HarvestRequest {
 
     @NotNull(message = "La saison est obligatoire")
     private Season season;
-
-    @Valid
-    private List<HarvestDetailRequest> harvestDetails;
 }

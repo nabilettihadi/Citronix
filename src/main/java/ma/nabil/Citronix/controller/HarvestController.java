@@ -63,10 +63,4 @@ public class HarvestController {
     public void delete(@PathVariable Long id) {
         harvestService.delete(id);
     }
-
-    @GetMapping("/{id}/quantity")
-    @Operation(summary = "Calculer le total", description = "Calcule la quantité totale récoltée")
-    public Double getTotalQuantity(@PathVariable Long id) {
-        return harvestService.getTotalQuantity(id);
-    }
 }
