@@ -5,10 +5,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ma.nabil.Citronix.dtos.requests.HarvestRequest;
+import ma.nabil.Citronix.dtos.responses.HarvestQuantityResponse;
 import ma.nabil.Citronix.dtos.responses.HarvestResponse;
 import ma.nabil.Citronix.enums.Season;
 import ma.nabil.Citronix.services.HarvestService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +33,11 @@ public class HarvestController {
     @Operation(summary = "Obtenir une récolte", description = "Récupère les détails d'une récolte par son ID")
     public HarvestResponse getById(@PathVariable Long id) {
         return harvestService.getById(id);
+    }
+
+    @GetMapping("/{id}/quantities")
+    public ResponseEntity<HarvestQuantityResponse> getHarvestQuantities(@PathVariable Long id) {
+        return ResponseEntity.ok(harvestService.getHarvestQuantities(id));
     }
 
     @GetMapping("/fields/{fieldId}")

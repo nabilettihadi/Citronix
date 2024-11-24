@@ -2,6 +2,7 @@ package ma.nabil.Citronix.dtos.requests;
 
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class TreeRequest {
     @NotNull(message = "La date de plantation est obligatoire")
+    @PastOrPresent(message = "La date de plantation ne peut pas être dans le futur")
     private LocalDate plantingDate;
 
     private Long fieldId;

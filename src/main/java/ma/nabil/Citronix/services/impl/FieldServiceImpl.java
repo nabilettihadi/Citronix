@@ -119,10 +119,31 @@ public class FieldServiceImpl implements FieldService {
     }
 
     private void validateFieldUpdate(Field field, FieldRequest request) {
+
         if (!field.getName().equals(request.getName()) &&
                 fieldRepository.existsByNameAndFarmId(request.getName(), field.getFarm().getId())) {
             throw new BusinessException("Un champ avec ce nom existe déjà dans cette ferme");
         }
-        validateFieldArea(field.getFarm().getId(), request.getArea());
+
+        if (!field.getArea().equals(request.getArea())) {
+            Farm farm = field.getFarm();
+
+            if (request.getArea() < 1000) {
+                throw new BusinessException("La superficie minimale doit être de 0.1 hectare (1000 m²)");
+            }
+            if (request.getArea() > farm.getArea() * 0.5) {
+                throw new BusinessException("La superficie du champ ne peut pas dépasser 50% de celle de la ferme");
+            }
+
+            Double totalAreaWithoutCurrentField = fieldRepository.calculateTotalAreaByFarmId(farm.getId()) - field.getArea();
+
+            if ((totalAreaWithoutCurrentField + request.getArea()) > farm.getArea()) {
+                throw new BusinessException(
+                        String.format("La superficie demandée (%.2f m²) dépasse la superficie maximale disponible (%.2f m²)",
+                                request.getArea(),
+                                farm.getArea() - totalAreaWithoutCurrentField)
+                );
+            }
+        }
     }
 }

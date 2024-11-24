@@ -1,6 +1,7 @@
 package ma.nabil.Citronix.services;
 
 import ma.nabil.Citronix.dtos.requests.HarvestRequest;
+import ma.nabil.Citronix.dtos.responses.HarvestQuantityResponse;
 import ma.nabil.Citronix.dtos.responses.HarvestResponse;
 import ma.nabil.Citronix.enums.Season;
 
@@ -22,4 +23,6 @@ public interface HarvestService {
     void delete(Long id);
 
     Double getTotalQuantity(Long harvestId);
+
+    HarvestQuantityResponse getHarvestQuantities(Long id);
 }

@@ -32,6 +32,8 @@ public class SaleServiceImpl implements SaleService {
         Sale sale = saleMapper.toEntity(request);
         sale.setHarvest(harvest);
 
+        validateSaleDates(sale, harvest);
+
         sale = saleRepository.save(sale);
         return saleMapper.toResponse(sale);
     }
@@ -73,30 +75,30 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
-@Transactional
-public SaleResponse update(Long id, SaleRequest request) {
-    Sale sale = getSaleById(id);
-    
-    double currentQuantity = sale.getQuantity();
-    double newQuantity = request.getQuantity();
-    double difference = newQuantity - currentQuantity;
-    
-    Double remainingQuantity = getRemainingQuantity(sale.getHarvest());
-    if (difference > remainingQuantity) {
-        throw new BusinessException(
-            String.format("Quantité insuffisante. Disponible: %.2f kg, Demandée: %.2f kg",
-                remainingQuantity, difference)
-        );
+    @Transactional
+    public SaleResponse update(Long id, SaleRequest request) {
+        Sale sale = getSaleById(id);
+
+        double currentQuantity = sale.getQuantity();
+        double newQuantity = request.getQuantity();
+        double difference = newQuantity - currentQuantity;
+
+        Double remainingQuantity = getRemainingQuantity(sale.getHarvest());
+        if (difference > remainingQuantity) {
+            throw new BusinessException(
+                    String.format("Quantité insuffisante. Disponible: %.2f kg, Demandée: %.2f kg",
+                            remainingQuantity, difference)
+            );
+        }
+
+        sale.setSaleDate(request.getSaleDate());
+        sale.setUnitPrice(request.getUnitPrice());
+        sale.setClient(request.getClient());
+        sale.setQuantity(request.getQuantity());
+
+        sale = saleRepository.save(sale);
+        return saleMapper.toResponse(sale);
     }
-    
-    sale.setSaleDate(request.getSaleDate());
-    sale.setUnitPrice(request.getUnitPrice());
-    sale.setClient(request.getClient());
-    sale.setQuantity(request.getQuantity());
-    
-    sale = saleRepository.save(sale);
-    return saleMapper.toResponse(sale);
-}
 
     @Override
     @Transactional
@@ -111,6 +113,16 @@ public SaleResponse update(Long id, SaleRequest request) {
             throw new BusinessException(
                     String.format("Quantité insuffisante. Disponible: %.2f kg, Demandée: %.2f kg",
                             remainingQuantity, request.getQuantity())
+            );
+        }
+    }
+
+    private void validateSaleDates(Sale sale, Harvest harvest) {
+        if (sale.getSaleDate().isBefore(harvest.getHarvestDate())) {
+            throw new BusinessException(
+                    String.format("La date de vente (%s) ne peut pas être antérieure à la date de récolte (%s)",
+                            sale.getSaleDate(),
+                            harvest.getHarvestDate())
             );
         }
     }

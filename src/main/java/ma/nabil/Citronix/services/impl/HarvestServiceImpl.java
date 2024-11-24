@@ -2,6 +2,7 @@ package ma.nabil.Citronix.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import ma.nabil.Citronix.dtos.requests.HarvestRequest;
+import ma.nabil.Citronix.dtos.responses.HarvestQuantityResponse;
 import ma.nabil.Citronix.dtos.responses.HarvestResponse;
 import ma.nabil.Citronix.entities.Field;
 import ma.nabil.Citronix.entities.Harvest;
@@ -10,6 +11,7 @@ import ma.nabil.Citronix.exceptions.BusinessException;
 import ma.nabil.Citronix.mappers.HarvestMapper;
 import ma.nabil.Citronix.repositories.FieldRepository;
 import ma.nabil.Citronix.repositories.HarvestRepository;
+import ma.nabil.Citronix.repositories.SaleRepository;
 import ma.nabil.Citronix.services.HarvestService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ import java.util.List;
 public class HarvestServiceImpl implements HarvestService {
     private final HarvestRepository harvestRepository;
     private final FieldRepository fieldRepository;
+    private final SaleRepository saleRepository;
     private final HarvestMapper harvestMapper;
 
     @Override
@@ -41,6 +44,22 @@ public class HarvestServiceImpl implements HarvestService {
 
         harvest = harvestRepository.save(harvest);
         return harvestMapper.toResponse(harvest);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public HarvestQuantityResponse getHarvestQuantities(Long id) {
+        Harvest harvest = getHarvestById(id);
+        Double totalSold = saleRepository.calculateTotalQuantitySoldByHarvestId(id);
+        if (totalSold == null) totalSold = 0.0;
+
+        Double availableQuantity = harvest.getTotalQuantity() - totalSold;
+
+        return HarvestQuantityResponse.builder()
+                .totalQuantity(harvest.getTotalQuantity())
+                .soldQuantity(totalSold)
+                .availableQuantity(availableQuantity)
+                .build();
     }
 
     @Override

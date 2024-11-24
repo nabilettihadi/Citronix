@@ -10,6 +10,7 @@ import ma.nabil.Citronix.exceptions.BusinessException;
 import ma.nabil.Citronix.mappers.HarvestDetailMapper;
 import ma.nabil.Citronix.repositories.HarvestDetailRepository;
 import ma.nabil.Citronix.repositories.HarvestRepository;
+import ma.nabil.Citronix.repositories.SaleRepository;
 import ma.nabil.Citronix.repositories.TreeRepository;
 import ma.nabil.Citronix.services.HarvestDetailService;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class HarvestDetailServiceImpl implements HarvestDetailService {
     private final HarvestRepository harvestRepository;
     private final TreeRepository treeRepository;
     private final HarvestDetailMapper harvestDetailMapper;
+    private final SaleRepository saleRepository;
 
     @Override
     public HarvestDetailResponse addDetail(Long harvestId, HarvestDetailRequest request) {
@@ -93,7 +95,19 @@ public class HarvestDetailServiceImpl implements HarvestDetailService {
     @Transactional
     public void delete(Long id) {
         HarvestDetail detail = getHarvestDetailById(id);
+        Harvest harvest = detail.getHarvest();
+
+        Double totalSold = saleRepository.calculateTotalQuantitySoldByHarvestId(harvest.getId());
+        if (totalSold != null && totalSold > 0) {
+            throw new BusinessException("Impossible de supprimer un détail de récolte qui a déjà été vendu");
+        }
+
+        harvest.getHarvestDetails().remove(detail);
+
         harvestDetailRepository.delete(detail);
+
+        calculateTotalQuantity(harvest);
+        harvestRepository.save(harvest);
     }
 
     @Override
@@ -115,8 +129,20 @@ public class HarvestDetailServiceImpl implements HarvestDetailService {
             throw new BusinessException("L'arbre n'appartient pas au champ spécifié");
         }
 
+        validateHarvestDates(tree, harvest);
+
         if (harvestDetailRepository.existsByHarvestIdAndTreeId(harvest.getId(), tree.getId())) {
             throw new BusinessException("Cet arbre a déjà été récolté pour cette récolte");
+        }
+    }
+
+    private void validateHarvestDates(Tree tree, Harvest harvest) {
+        if (harvest.getHarvestDate().isBefore(tree.getPlantingDate())) {
+            throw new BusinessException(
+                    String.format("La date de récolte (%s) ne peut pas être antérieure à la date de plantation de l'arbre (%s)",
+                            harvest.getHarvestDate(),
+                            tree.getPlantingDate())
+            );
         }
     }
 
