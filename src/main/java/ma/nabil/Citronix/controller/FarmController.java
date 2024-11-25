@@ -6,7 +6,12 @@ import ma.nabil.Citronix.dtos.requests.FarmRequest;
 import ma.nabil.Citronix.dtos.requests.FarmSearchCriteria;
 import ma.nabil.Citronix.dtos.responses.FarmResponse;
 import ma.nabil.Citronix.services.FarmService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,8 +35,19 @@ public class FarmController {
     }
 
     @GetMapping("/all")
-    public List<FarmResponse> getAll() {
-        return farmService.getAll();
+    public ResponseEntity<Page<FarmResponse>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) {
+
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("desc") ?
+                Sort.Direction.DESC : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+        Page<FarmResponse> farms = farmService.getAll(pageable);
+
+        return ResponseEntity.ok(farms);
     }
 
     @GetMapping

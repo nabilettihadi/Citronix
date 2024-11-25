@@ -9,6 +9,8 @@ import ma.nabil.Citronix.exceptions.BusinessException;
 import ma.nabil.Citronix.mappers.FarmMapper;
 import ma.nabil.Citronix.repositories.FarmRepository;
 import ma.nabil.Citronix.services.FarmService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,12 +49,10 @@ public class FarmServiceImpl implements FarmService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<FarmResponse> getAll() {
-        return farmRepository.findAll().stream()
-                .map(farmMapper::toResponse)
-                .toList();
+    public Page<FarmResponse> getAll(Pageable pageable) {
+        return farmRepository.findAll(pageable)
+                .map(farmMapper::toResponse);
     }
-
 
     private Farm getFarmById(Long id) {
         return farmRepository.findById(id)

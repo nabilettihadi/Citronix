@@ -3,6 +3,8 @@ package ma.nabil.Citronix.services;
 import ma.nabil.Citronix.dtos.requests.FarmRequest;
 import ma.nabil.Citronix.dtos.requests.FarmSearchCriteria;
 import ma.nabil.Citronix.dtos.responses.FarmResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -14,7 +16,7 @@ public interface FarmService {
 
     FarmResponse getById(Long id);
 
-    List<FarmResponse> getAll();
+    Page<FarmResponse> getAll(Pageable pageable);
 
     void delete(Long id);
 
