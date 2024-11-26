@@ -59,6 +59,10 @@ Le système propose une API REST complète pour des opérations de gestion flexi
 
 ---
 
+## 📊 Diagramme de Classes
+
+![Class Diagram](UML/Diagramme%20de%20Classe%20Citronix.png)
+
 ## 📝 **API Endpoints**
 
 ### 🏡 Gestion des Fermes
@@ -202,10 +206,6 @@ citronix/
 ├── pom.xml # Configuration Maven
 └── README.md
 ```
-
-## 📊 Diagramme de Classes
-
-![Class Diagram](UML/Diagramme%20de%20Classe%20Citronix.png)
 
 ## 🤝 Contribution
 
