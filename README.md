@@ -205,7 +205,7 @@ citronix/
 
 ## 📊 Diagramme de Classes
 
-![Class Diagram](UML/Diagramme de Classe Citronix.png)
+![Class Diagram](UML/Diagramme%20de%20Classe%20Citronix.png)
 
 ## 🤝 Contribution
 
